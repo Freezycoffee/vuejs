@@ -29,7 +29,7 @@
     <div class="box">
       <router-link :to="`/product/${product.id}`" class="has-text-dark">
         <figure class="image mb-2">
-          <img v-bind:src="product.img_url" v-bind:alt="product.name">
+          <img v-bind:src="product.image" v-bind:alt="product.name">
         </figure>
         <div class="content has-text-centered">
         <h3 class="title is-4">{{ product.name }}</h3>
@@ -37,6 +37,10 @@
         </div>
       </router-link>
     </div>
+    </div>
+
+    <div class="container" v-if="errors.length">
+      <h2 class="subtitle has-text-centered is-5" v-for="error in errors" :key="error"><strong>Sorry there is an error: {{ error }}</strong></h2>
     </div>
 
     <!-- End iterations -->
@@ -48,7 +52,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
+import { supabase } from '@/supabaseClient';
 
 
 export default{
@@ -56,6 +61,7 @@ export default{
     data() {
         return {
             products: [],
+            errors: [],
             query: ''
         }
     },
@@ -72,15 +78,29 @@ export default{
         this.searchProducts();
     },
     methods: {
-        searchProducts(){
+        async searchProducts(){
             // make an API call to search products
-            axios.post('/api/v1/search/',{"query":this.query})
-            .then(response => {
-                this.products = response.data;
-            })
-            .catch(error => {
-                console.error('There was an error searching for products:', error);
-            });
+
+            const { data, error } = await supabase.from('products').select().or(`name.ilike.%${this.query}%,description.ilike.%${this.query}%`);
+            if (error) {
+              this.errors.push(error);
+            }
+            else if(data.length === 0){
+              this.errors.push(`cannot find product for ${this.query}`)
+            };
+            console.log(data);
+            this.products = data;
+
+
+
+
+            // axios.post('/api/v1/search/',{"query":this.query})
+            // .then(response => {
+            //     this.products = response.data;
+            // })
+            // .catch(error => {
+            //     console.error('There was an error searching for products:', error);
+            // });
         }
     }
 }
