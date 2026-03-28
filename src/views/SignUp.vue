@@ -55,6 +55,7 @@
 
 <script>
 import axios from 'axios';
+import { supabase } from '@/supabaseClient';
 import { toast } from 'bulma-toast';
 
 export default {
@@ -74,7 +75,7 @@ export default {
         document.title = "Sign Up - Arla Racing Exhaust Indonesia";
     },
     methods: {
-        submitSignUp() {
+        async submitSignUp() {
 
             this.errors = [];
 
@@ -90,38 +91,53 @@ export default {
             if (!this.errors.length) {
             // Prepare payload
             const payload = {
-                username: this.username,
                 email: this.email,
-                password: this.password
+                password: this.password,
+                options: {
+                    data: {
+                    username: this.username,},
+                emailRedirectTo: 'localhost:8080/login'}
             };
 
+            const { data, error } = await supabase.auth.signUp(payload);
+            if(error) {
+                console.log(error);
+            };
+            toast(
+                {
+                    message: "Confirmation email sent! Please check your inbox to verify and complete the registration",
+                    type: 'is-success',
+                    duration: 3000,
+                    position: 'top-center'
+                }
+            );  
             // Make an API call to sign up the user
-            axios.post('/api/v1/users/', payload)
-                .then(response => {
-                    toast({
-                        message: 'Sign up successful! Please log in.',
-                        type: 'is-success',
-                        duration: 3000,
-                        position: 'top-center'
-                    });
-                    // Redirect to login page after successful sign up
-                    this.$router.push('/login');
-                })
-                .catch(error => {
-                    if (error.response) {
-                        for (const key in error.response.data) {
-                            if (error.response.data.hasOwnProperty(key)) {
-                                this.errors.push(`${key}: ${error.response.data[key]}`);
-                            }
-                        }
-                        console.log(JSON.stringify(error.response.data));
-                    }
-                    else if (error.message) {
-                        this.errors.push('Something went wrong please try again later.');
+            // axios.post('/api/v1/users/', payload)
+            //     .then(response => {
+            //         toast({
+            //             message: 'Sign up successful! Please log in.',
+            //             type: 'is-success',
+            //             duration: 3000,
+            //             position: 'top-center'
+            //         });
+            //         // Redirect to login page after successful sign up
+            //         this.$router.push('/login');
+            //     })
+                // .catch(error => {
+                //     if (error.response) {
+                //         for (const key in error.response.data) {
+                //             if (error.response.data.hasOwnProperty(key)) {
+                //                 this.errors.push(`${key}: ${error.response.data[key]}`);
+                //             }
+                //         }
+                //         console.log(JSON.stringify(error.response.data));
+                //     }
+                //     else if (error.message) {
+                //         this.errors.push('Something went wrong please try again later.');
 
-                        console.log(JSON.stringify(error));
-                    }
-                });
+                //         console.log(JSON.stringify(error));
+                //     }
+                // });
         }}
     }
 }
