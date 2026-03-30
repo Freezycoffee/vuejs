@@ -28,6 +28,10 @@
               <router-link to="/login" class="button is-dark">
                 <strong><i class="fas fa-user"></i>&nbsp; Log in</strong>
               </router-link>
+
+              <router-link to="/cart" class="button is-primary">
+                <strong><i class="fas fa-shopping-cart"></i>&nbsp; Cart</strong>
+              </router-link>
               </template>
 
               <!-- if user is authenticated shows profile button -->
@@ -35,10 +39,11 @@
               <router-link to="/profile" class="button is-dark">
                 <strong><i class="fas fa-user"></i>&nbsp; Profile</strong>
               </router-link>
-              </template>
+              
               <router-link to="/cart" class="button is-primary">
                 <strong><i class="fas fa-shopping-cart"></i>&nbsp; Cart ({{ cartTotalLength }})</strong>
               </router-link>
+              </template>              
             </div>
           </div>
 

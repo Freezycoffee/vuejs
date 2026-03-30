@@ -65,7 +65,7 @@ export default {
     methods: {
         removeFromCart(item) {
             this.cart.items = this.cart.items.filter(i => i.product.id !== item.product.id);
-            window.location.reload();
+            // window.location.reload();
         }
     },
     mounted() {
