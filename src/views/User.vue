@@ -14,7 +14,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
+import { supabase } from '@/supabaseClient';
 
 export default {
     name: 'User',
@@ -24,17 +25,19 @@ export default {
             }
         },
     methods: {
-        logout() {
+        async logout() {
             // Clear user data and token
-            axios.defaults.headers.common['Authorization'] = '';
-
+            // axios.defaults.headers.common['Authorization'] = '';
+            const {error} = await supabase.auth.signOut()
             localStorage.removeItem('token');
             localStorage.removeItem('username');
             localStorage.removeItem('user_id');
 
             this.$store.commit('clearToken');
+            this.$store.state.isAuthenticated = false;
 
             this.$router.push('/');
+
         }
     },
     mounted() {

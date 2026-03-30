@@ -92,6 +92,23 @@ export default {
     this.getInstruments();
 },
   methods: {
+    generateUniqueRandomIntegers(count, min, max) {
+    // Use a Set to automatically handle unique values
+    const uniqueNumbers = new Set(); 
+    
+    // Loop until the Set contains the desired number of items
+    while (uniqueNumbers.size < count) {
+        // Generate a random integer within the specified range (inclusive)
+        // Formula: Math.floor(Math.random() * (max - min + 1)) + min
+        const randomInt = Math.floor(Math.random() * (max - min + 1)) + min;
+        
+        // Add the number to the Set. If it's a duplicate, the Set ignores it.
+        uniqueNumbers.add(randomInt); 
+    }
+    
+    // Convert the Set to an Array and return it
+    return Array.from(uniqueNumbers);
+},
     
     // getProducts(){
     //   axios.get('/api/v1/products/')
@@ -105,9 +122,10 @@ export default {
 
     // },
     async getInstruments() {
-      const { data } = await supabase.from('products').select('*');
+      const indexes = this.generateUniqueRandomIntegers(6,1,10);
+      const { data } = await supabase.from('products').select('*').in('id',indexes);
       const { data: product_count } = await supabase.from('product_count_by_category').select();
-      this.products = data.slice(0, 6);
+      this.products = data;
       this.categories = product_count;
     }
   
